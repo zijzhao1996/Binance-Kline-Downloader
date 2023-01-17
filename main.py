@@ -6,9 +6,8 @@ from logger import get_logger
 from utils import START_DATE, END_DATE, convert_to_date_object, download_file, get_parser, get_path
 
 
-def download_monthly_klines(trading_type, symbols, intervals,
-                            years, months, start_date, end_date, folder,
-                            checksum, logger):
+def download_monthly_klines(trading_type, symbols, intervals, years, months,
+                            start_date, end_date, folder, checksum, logger):
     """
     main function to download klines data. 
     Params: 
@@ -25,7 +24,7 @@ def download_monthly_klines(trading_type, symbols, intervals,
         start_date = START_DATE
     else:
         start_date = convert_to_date_object(start_date)
-    
+
     if not end_date:
         end_date = END_DATE
     else:
@@ -35,31 +34,46 @@ def download_monthly_klines(trading_type, symbols, intervals,
 
     current = 0
     for symbol in symbols:
-        print("[{}/{}] Downloading monthly {} klines...".format(current+1, len(symbols), symbol))
+        print("[{}/{}] Downloading monthly {} klines...".format(
+            current + 1, len(symbols), symbol))
         for interval in intervals:
             for year in years:
                 for month in months:
-                    current_date = convert_to_date_object('{}-{}-01'.format(year, month))
+                    current_date = convert_to_date_object('{}-{}-01'.format(
+                        year, month))
                     if current_date >= start_date and current_date <= end_date:
-                        path = get_path(trading_type, 'klines', 'monthly', symbol, interval)
-                        file_name = "{}-{}-{}-{}.zip".format(symbol.upper(), interval, year, '{:02d}'.format(month))
-                        download_file(path, file_name, logger, date_range, folder)
+                        path = get_path(trading_type, 'klines', 'monthly',
+                                        symbol, interval)
+                        file_name = "{}-{}-{}-{}.zip".format(
+                            symbol.upper(), interval, year,
+                            '{:02d}'.format(month))
+                        download_file(path, file_name, logger, date_range,
+                                      folder)
 
                     if checksum:
-                        checksum_name = "{}-{}-{}-{}.zip.CHECKSUM".format(symbol.upper(), interval, year, '{:02d}'.format(month))
-                        download_file(path, checksum_name, logger, date_range, folder)
+                        checksum_name = "{}-{}-{}-{}.zip.CHECKSUM".format(
+                            symbol.upper(), interval, year,
+                            '{:02d}'.format(month))
+                        download_file(path, checksum_name, logger, date_range,
+                                      folder)
 
 
-def download():
+def main():
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:])
+    print('hello world')
+    logger = get_logger('info', os.path.join('./logs', 'log.txt'))
 
-    
+    download_monthly_klines(args.type, args.symbols, args.intervals,
+                            args.years, args.months, args.startDate,
+                            args.endDate, args.folder, args.checksum, logger)
 
 
 if __name__ == "__main__":
     print('=====================')
-    download()
+    main()
     #TODO: modify log file name
+
     logger = get_logger('info', os.path.join('./logs', 'log.txt'))
-    download_monthly_klines('spot', ['1INCHBTC'], ['1m'], [2022], [1], '2017-12-21', '2022-07-01', None, True, logger)
+    download_monthly_klines('spot', ['1INCHBTC'], ['1m'], [2022], [1],
+                            '2017-12-21', '2022-07-01', None, True, logger)
